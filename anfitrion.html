@@ -32,7 +32,7 @@
     z-index: 1;
     text-align: center;
     padding: 2rem;
-    max-width: 400px;
+    max-width: 420px;
     width: 100%;
   }
 
@@ -128,6 +128,15 @@
     gap: 0.3rem;
   }
 
+  /* Timbre de recreo ocupa fila completa */
+  .timbre-btn.full {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+  }
+
   .timbre-btn .icon { font-size: 1.4rem; }
 
   .timbre-btn:hover {
@@ -140,6 +149,18 @@
     background: #1e1a0e;
     color: #c9a84c;
     box-shadow: 0 0 12px rgba(201,168,76,0.15);
+  }
+
+  /* Recreo tiene acento rojo/naranja */
+  .timbre-btn.recreo.active {
+    border-color: #c9604c;
+    background: #1e100e;
+    color: #c9604c;
+    box-shadow: 0 0 14px rgba(201,96,76,0.2);
+  }
+  .timbre-btn.recreo:hover {
+    border-color: #c9604c;
+    color: #c9604c;
   }
 
   .preview-btn {
@@ -244,6 +265,11 @@
       <span class="icon">✨</span>
       Chime suave
       <button class="preview-btn" onclick="event.stopPropagation(); preview('chime')">▶ probar</button>
+    </button>
+    <button class="timbre-btn full recreo" onclick="selectTimbre('recreo', this)">
+      <span class="icon">🏫</span>
+      Timbre de recreo
+      <button class="preview-btn" onclick="event.stopPropagation(); preview('recreo')">▶ probar</button>
     </button>
   </div>
 
@@ -351,6 +377,72 @@ const TIMBRES = {
         osc.start(ctx.currentTime + time);
         osc.stop(ctx.currentTime + time + dur + 0.1);
       });
+    }
+  },
+
+  recreo: {
+    label: 'Recreo 🏫',
+    play(ctx) {
+      // Timbre eléctrico de escuela: tono agudo sostenido con pulsos rápidos
+      const duration = 2.5;
+      const freq = 880;
+      const pulseRate = 25; // Hz — vibración característica del timbre de recreo
+
+      const osc = ctx.createOscillator();
+      const tremolo = ctx.createOscillator();
+      const tremoloGain = ctx.createGain();
+      const masterGain = ctx.createGain();
+      const distortion = ctx.createWaveShaper();
+
+      // Curva de distorsión para dar el tono áspero metálico
+      const curve = new Float32Array(256);
+      for (let i = 0; i < 256; i++) {
+        const x = (i * 2) / 256 - 1;
+        curve[i] = (Math.PI + 200) * x / (Math.PI + 200 * Math.abs(x));
+      }
+      distortion.curve = curve;
+
+      // Oscilador principal: cuadrada, aguda y áspera
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+      // Tremolo que simula el "pulso" mecánico del timbre
+      tremolo.type = 'sine';
+      tremolo.frequency.setValueAtTime(pulseRate, ctx.currentTime);
+      tremoloGain.gain.setValueAtTime(0.5, ctx.currentTime);
+
+      // Volumen general alto
+      masterGain.gain.setValueAtTime(0, ctx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.02);
+      masterGain.gain.setValueAtTime(0.6, ctx.currentTime + duration - 0.05);
+      masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
+
+      // Conexiones: osc -> distortion -> masterGain -> destination
+      //             tremolo -> tremoloGain -> masterGain.gain (AM)
+      tremolo.connect(tremoloGain);
+      tremoloGain.connect(masterGain.gain);
+      osc.connect(distortion);
+      distortion.connect(masterGain);
+      masterGain.connect(ctx.destination);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + duration);
+      tremolo.start(ctx.currentTime);
+      tremolo.stop(ctx.currentTime + duration);
+
+      // Segunda capa: armónico para más cuerpo
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(freq * 1.5, ctx.currentTime);
+      gain2.gain.setValueAtTime(0, ctx.currentTime);
+      gain2.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+      gain2.gain.setValueAtTime(0.15, ctx.currentTime + duration - 0.05);
+      gain2.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime);
+      osc2.stop(ctx.currentTime + duration);
     }
   }
 };
