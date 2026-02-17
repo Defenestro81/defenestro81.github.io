@@ -9,31 +9,36 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html, body {
+    height: 100%;
+  }
+
   body {
-    min-height: 100vh;
+    min-height: 100%;
     background: #0f0e0c;
     font-family: 'DM Sans', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    justify-content: flex-start;
+    overflow-y: auto;
     color: #e8d5a3;
+    padding: 2rem 1rem;
   }
 
   .bg {
     position: fixed;
     inset: 0;
     background: radial-gradient(ellipse at 40% 60%, #1a1206 0%, #0f0e0c 70%);
+    z-index: 0;
   }
 
   .panel {
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 2rem;
-    max-width: 420px;
     width: 100%;
+    max-width: 400px;
   }
 
   h1 {
@@ -111,11 +116,12 @@
     margin-bottom: 1.5rem;
   }
 
+  /* Cada botón de timbre */
   .timbre-btn {
     background: #141210;
     border: 1px solid #1e1c18;
     border-radius: 6px;
-    padding: 0.65rem 0.5rem;
+    padding: 0.65rem 0.5rem 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
     color: #7a6e5e;
@@ -125,24 +131,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
   }
 
-  /* Timbre de recreo ocupa fila completa */
-  .timbre-btn.full {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    justify-content: center;
-    gap: 0.6rem;
-    padding: 0.75rem 1rem;
-  }
+  .timbre-btn .icon { font-size: 1.4rem; line-height: 1; }
+  .timbre-btn .name { line-height: 1.2; }
 
-  .timbre-btn .icon { font-size: 1.4rem; }
-
-  .timbre-btn:hover {
-    border-color: #3a3228;
-    color: #c9a84c;
-  }
+  .timbre-btn:hover { border-color: #3a3228; color: #c9a84c; }
 
   .timbre-btn.active {
     border-color: #c9a84c;
@@ -151,17 +146,18 @@
     box-shadow: 0 0 12px rgba(201,168,76,0.15);
   }
 
-  /* Recreo tiene acento rojo/naranja */
+  /* Recreo ocupa columna completa */
+  .timbre-btn.full {
+    grid-column: 1 / -1;
+  }
+
   .timbre-btn.recreo.active {
     border-color: #c9604c;
     background: #1e100e;
     color: #c9604c;
     box-shadow: 0 0 14px rgba(201,96,76,0.2);
   }
-  .timbre-btn.recreo:hover {
-    border-color: #c9604c;
-    color: #c9604c;
-  }
+  .timbre-btn.recreo:hover { border-color: #c9604c; color: #c9604c; }
 
   .preview-btn {
     background: none;
@@ -173,6 +169,7 @@
     letter-spacing: 0.06em;
     transition: color 0.2s;
     padding: 0;
+    margin-top: 0.1rem;
   }
   .preview-btn:hover { color: #c9a84c; }
 
@@ -189,7 +186,7 @@
     border: 1px solid #1e1c18;
     border-radius: 6px;
     padding: 0.75rem 1rem;
-    min-height: 100px;
+    min-height: 80px;
     max-height: 160px;
     overflow-y: auto;
     text-align: left;
@@ -206,12 +203,13 @@
   }
   .log-entry:last-child { border-bottom: none; }
   .log-entry .time { color: #c9a84c; font-size: 0.75rem; font-weight: 500; }
-  .log-entry .label { color: #5a5040; font-size: 0.7rem; margin-left: 0.4rem; }
+  .log-entry .lbl { color: #5a5040; font-size: 0.7rem; margin-left: 0.4rem; }
 
   .empty { color: #2a2418; font-size: 0.8rem; padding: 1rem 0; text-align: center; }
 
   .activate {
     margin-top: 1.5rem;
+    margin-bottom: 2rem;
     padding: 0.7rem 2rem;
     background: transparent;
     border: 1px solid #2a2418;
@@ -248,27 +246,27 @@
   <div class="selector">
     <button class="timbre-btn active" onclick="selectTimbre('dingdong', this)">
       <span class="icon">🔔</span>
-      Din-don clásico
+      <span class="name">Din-don clásico</span>
       <button class="preview-btn" onclick="event.stopPropagation(); preview('dingdong')">▶ probar</button>
     </button>
     <button class="timbre-btn" onclick="selectTimbre('buzz', this)">
       <span class="icon">⚡</span>
-      Timbre eléctrico
+      <span class="name">Timbre eléctrico</span>
       <button class="preview-btn" onclick="event.stopPropagation(); preview('buzz')">▶ probar</button>
     </button>
     <button class="timbre-btn" onclick="selectTimbre('campana', this)">
       <span class="icon">🎐</span>
-      Campana
+      <span class="name">Campana</span>
       <button class="preview-btn" onclick="event.stopPropagation(); preview('campana')">▶ probar</button>
     </button>
     <button class="timbre-btn" onclick="selectTimbre('chime', this)">
       <span class="icon">✨</span>
-      Chime suave
+      <span class="name">Chime suave</span>
       <button class="preview-btn" onclick="event.stopPropagation(); preview('chime')">▶ probar</button>
     </button>
     <button class="timbre-btn full recreo" onclick="selectTimbre('recreo', this)">
       <span class="icon">🏫</span>
-      Timbre de recreo
+      <span class="name">Timbre de recreo</span>
       <button class="preview-btn" onclick="event.stopPropagation(); preview('recreo')">▶ probar</button>
     </button>
   </div>
@@ -283,7 +281,7 @@
 
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
 <script>
-const ABLY_KEY = 'v1G3Ag.g0aoow:oREwCVy4aha_k-mMkJjOnEpx5EPzWfW1Zzfzkaiqa2g';
+const ABLY_KEY = 'v1G3Ag.g0aoow:oREwCVy4aha_k-mMkJjOnEpX5EPzWfW1Zzfzkaiqa2g';
 const CHANNEL  = 'timbre';
 
 let audioCtx = null;
@@ -383,10 +381,9 @@ const TIMBRES = {
   recreo: {
     label: 'Recreo 🏫',
     play(ctx) {
-      // Timbre eléctrico de escuela: tono agudo sostenido con pulsos rápidos
       const duration = 2.5;
       const freq = 880;
-      const pulseRate = 25; // Hz — vibración característica del timbre de recreo
+      const pulseRate = 25;
 
       const osc = ctx.createOscillator();
       const tremolo = ctx.createOscillator();
@@ -394,7 +391,6 @@ const TIMBRES = {
       const masterGain = ctx.createGain();
       const distortion = ctx.createWaveShaper();
 
-      // Curva de distorsión para dar el tono áspero metálico
       const curve = new Float32Array(256);
       for (let i = 0; i < 256; i++) {
         const x = (i * 2) / 256 - 1;
@@ -402,23 +398,16 @@ const TIMBRES = {
       }
       distortion.curve = curve;
 
-      // Oscilador principal: cuadrada, aguda y áspera
       osc.type = 'square';
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-      // Tremolo que simula el "pulso" mecánico del timbre
       tremolo.type = 'sine';
       tremolo.frequency.setValueAtTime(pulseRate, ctx.currentTime);
       tremoloGain.gain.setValueAtTime(0.5, ctx.currentTime);
-
-      // Volumen general alto
       masterGain.gain.setValueAtTime(0, ctx.currentTime);
       masterGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.02);
       masterGain.gain.setValueAtTime(0.6, ctx.currentTime + duration - 0.05);
       masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
 
-      // Conexiones: osc -> distortion -> masterGain -> destination
-      //             tremolo -> tremoloGain -> masterGain.gain (AM)
       tremolo.connect(tremoloGain);
       tremoloGain.connect(masterGain.gain);
       osc.connect(distortion);
@@ -430,9 +419,7 @@ const TIMBRES = {
       tremolo.start(ctx.currentTime);
       tremolo.stop(ctx.currentTime + duration);
 
-      // Segunda capa: armónico para más cuerpo
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
+      const osc2 = ctx.createOscillator(), gain2 = ctx.createGain();
       osc2.type = 'square';
       osc2.frequency.setValueAtTime(freq * 1.5, ctx.currentTime);
       gain2.gain.setValueAtTime(0, ctx.currentTime);
@@ -487,7 +474,7 @@ function addLog(timbreLabel) {
   const time = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const entry = document.createElement('div');
   entry.className = 'log-entry';
-  entry.innerHTML = `<span>Visita #${count} <span class="label">${timbreLabel}</span></span><span class="time">${time}</span>`;
+  entry.innerHTML = `<span>Visita #${count} <span class="lbl">${timbreLabel}</span></span><span class="time">${time}</span>`;
   log.insertBefore(entry, log.firstChild);
 }
 
