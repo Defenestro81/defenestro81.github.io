@@ -32,7 +32,7 @@
     z-index: 1;
     text-align: center;
     padding: 2rem;
-    max-width: 380px;
+    max-width: 400px;
     width: 100%;
   }
 
@@ -47,23 +47,21 @@
     color: #5a5040;
     font-size: 0.85rem;
     letter-spacing: 0.06em;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
   }
 
-  /* Indicator */
   .indicator {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
-    margin: 0 auto 2rem;
+    margin: 0 auto 1.5rem;
     background: #1a1810;
     border: 2px solid #2a2418;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.5rem;
+    font-size: 3rem;
     transition: all 0.3s;
-    position: relative;
   }
 
   .indicator.ring {
@@ -80,7 +78,6 @@
     100%{ transform: scale(1); }
   }
 
-  /* Status dot */
   .dot {
     width: 8px; height: 8px;
     border-radius: 50%;
@@ -96,10 +93,68 @@
     font-size: 0.8rem;
     color: #5a5040;
     letter-spacing: 0.05em;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
   }
 
-  /* Log */
+  .selector-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #3a3228;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .timbre-btn {
+    background: #141210;
+    border: 1px solid #1e1c18;
+    border-radius: 6px;
+    padding: 0.65rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #7a6e5e;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .timbre-btn .icon { font-size: 1.4rem; }
+
+  .timbre-btn:hover {
+    border-color: #3a3228;
+    color: #c9a84c;
+  }
+
+  .timbre-btn.active {
+    border-color: #c9a84c;
+    background: #1e1a0e;
+    color: #c9a84c;
+    box-shadow: 0 0 12px rgba(201,168,76,0.15);
+  }
+
+  .preview-btn {
+    background: none;
+    border: none;
+    color: #3a3228;
+    font-size: 0.65rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+    padding: 0;
+  }
+  .preview-btn:hover { color: #c9a84c; }
+
   .log-title {
     font-size: 0.7rem;
     letter-spacing: 0.12em;
@@ -113,8 +168,8 @@
     border: 1px solid #1e1c18;
     border-radius: 6px;
     padding: 0.75rem 1rem;
-    min-height: 120px;
-    max-height: 180px;
+    min-height: 100px;
+    max-height: 160px;
     overflow-y: auto;
     text-align: left;
   }
@@ -130,12 +185,12 @@
   }
   .log-entry:last-child { border-bottom: none; }
   .log-entry .time { color: #c9a84c; font-size: 0.75rem; font-weight: 500; }
+  .log-entry .label { color: #5a5040; font-size: 0.7rem; margin-left: 0.4rem; }
 
   .empty { color: #2a2418; font-size: 0.8rem; padding: 1rem 0; text-align: center; }
 
-  /* Activate button */
   .activate {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     padding: 0.7rem 2rem;
     background: transparent;
     border: 1px solid #2a2418;
@@ -163,9 +218,33 @@
 
   <div class="indicator" id="indicator">🔔</div>
 
-  <div class="conn-status" id="connStatus">
+  <div class="conn-status">
     <span class="dot" id="dot"></span>
     <span id="connText">Conectando…</span>
+  </div>
+
+  <div class="selector-title">Elegí el timbre</div>
+  <div class="selector">
+    <button class="timbre-btn active" onclick="selectTimbre('dingdong', this)">
+      <span class="icon">🔔</span>
+      Din-don clásico
+      <button class="preview-btn" onclick="event.stopPropagation(); preview('dingdong')">▶ probar</button>
+    </button>
+    <button class="timbre-btn" onclick="selectTimbre('buzz', this)">
+      <span class="icon">⚡</span>
+      Timbre eléctrico
+      <button class="preview-btn" onclick="event.stopPropagation(); preview('buzz')">▶ probar</button>
+    </button>
+    <button class="timbre-btn" onclick="selectTimbre('campana', this)">
+      <span class="icon">🎐</span>
+      Campana
+      <button class="preview-btn" onclick="event.stopPropagation(); preview('campana')">▶ probar</button>
+    </button>
+    <button class="timbre-btn" onclick="selectTimbre('chime', this)">
+      <span class="icon">✨</span>
+      Chime suave
+      <button class="preview-btn" onclick="event.stopPropagation(); preview('chime')">▶ probar</button>
+    </button>
   </div>
 
   <div class="log-title">Llegadas</div>
@@ -173,59 +252,133 @@
     <div class="empty" id="empty">Nadie llegó aún</div>
   </div>
 
-  <button class="activate" onclick="activateAudio()">Activar sonido (tocá primero)</button>
+  <button class="activate" id="activateBtn" onclick="activateAudio()">Activar sonido (tocá primero)</button>
 </div>
 
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
 <script>
-const ABLY_KEY = 'v1G3Ag.g0aoow:oREwCVy4aha_k-mMkJjOnEpx5EPzWfW1Zzfzkaiqa2g';
+const ABLY_KEY = 'v1G3Ag.g0aoow:oREwCVy4aha_k-mMkJjOnEpX5EPzWfW1Zzfzkaiqa2g';
 const CHANNEL  = 'timbre';
 
 let audioCtx = null;
+let currentTimbre = 'dingdong';
 let count = 0;
 
-function activateAudio() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  // Play silent buffer to unlock
-  const buf = audioCtx.createBuffer(1, 1, 22050);
-  const src = audioCtx.createBufferSource();
-  src.buffer = buf;
-  src.connect(audioCtx.destination);
-  src.start(0);
-  document.querySelector('.activate').textContent = '✓ Sonido activado';
-  document.querySelector('.activate').style.color = '#7abf7a';
-  document.querySelector('.activate').style.borderColor = '#7abf7a';
+const TIMBRES = {
+  dingdong: {
+    label: 'Din-don',
+    play(ctx) {
+      [
+        { freq: 880, time: 0,   dur: 0.6 },
+        { freq: 659, time: 0.5, dur: 0.9 },
+        { freq: 784, time: 1.1, dur: 0.6 },
+        { freq: 523, time: 1.6, dur: 1.0 },
+      ].forEach(({ freq, time, dur }) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + time);
+        gain.gain.setValueAtTime(0, ctx.currentTime + time);
+        gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + time + dur);
+        osc.start(ctx.currentTime + time);
+        osc.stop(ctx.currentTime + time + dur);
+      });
+    }
+  },
+
+  buzz: {
+    label: 'Eléctrico',
+    play(ctx) {
+      [0, 0.45].forEach(t => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120, ctx.currentTime + t);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime + t);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime + t + 0.3);
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.35);
+        osc.start(ctx.currentTime + t);
+        osc.stop(ctx.currentTime + t + 0.4);
+      });
+    }
+  },
+
+  campana: {
+    label: 'Campana',
+    play(ctx) {
+      [1046, 1318, 1568].forEach((freq, i) => {
+        const t = i * 0.18;
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + t);
+        gain.gain.setValueAtTime(0, ctx.currentTime + t);
+        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 1.8);
+        osc.start(ctx.currentTime + t);
+        osc.stop(ctx.currentTime + t + 2);
+
+        const osc2 = ctx.createOscillator(), gain2 = ctx.createGain();
+        osc2.connect(gain2); gain2.connect(ctx.destination);
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(freq * 2.756, ctx.currentTime + t);
+        gain2.gain.setValueAtTime(0, ctx.currentTime + t);
+        gain2.gain.linearRampToValueAtTime(0.08, ctx.currentTime + t + 0.01);
+        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.8);
+        osc2.start(ctx.currentTime + t);
+        osc2.stop(ctx.currentTime + t + 1);
+      });
+    }
+  },
+
+  chime: {
+    label: 'Chime',
+    play(ctx) {
+      [
+        { freq: 1174, time: 0,   dur: 1.5 },
+        { freq: 1318, time: 0.2, dur: 1.5 },
+        { freq: 1568, time: 0.4, dur: 2.0 },
+        { freq: 1760, time: 0.7, dur: 2.2 },
+      ].forEach(({ freq, time, dur }) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + time);
+        gain.gain.setValueAtTime(0, ctx.currentTime + time);
+        gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + time + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + time + dur);
+        osc.start(ctx.currentTime + time);
+        osc.stop(ctx.currentTime + time + dur + 0.1);
+      });
+    }
+  }
+};
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
 }
 
-function playDoorbell() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
+function activateAudio() {
+  const ctx = getCtx();
+  const buf = ctx.createBuffer(1, 1, 22050);
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.connect(ctx.destination); src.start(0);
+  const btn = document.getElementById('activateBtn');
+  btn.textContent = '✓ Sonido activado';
+  btn.style.color = '#7abf7a';
+  btn.style.borderColor = '#7abf7a';
+}
 
-  // Ding - Dong
-  const notes = [
-    { freq: 880, time: 0,    dur: 0.6 },
-    { freq: 659, time: 0.5,  dur: 0.9 },
-    { freq: 784, time: 1.1,  dur: 0.6 },
-    { freq: 523, time: 1.6,  dur: 1.0 },
-  ];
+function selectTimbre(name, el) {
+  currentTimbre = name;
+  document.querySelectorAll('.timbre-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
 
-  notes.forEach(({ freq, time, dur }) => {
-    const osc  = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + time);
-
-    gain.gain.setValueAtTime(0, audioCtx.currentTime + time);
-    gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + time + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + time + dur);
-
-    osc.start(audioCtx.currentTime + time);
-    osc.stop(audioCtx.currentTime + time + dur);
-  });
+function preview(name) {
+  TIMBRES[name].play(getCtx());
 }
 
 function flash() {
@@ -234,38 +387,35 @@ function flash() {
   setTimeout(() => ind.classList.remove('ring'), 1000);
 }
 
-function addLog() {
+function addLog(timbreLabel) {
   count++;
-  const log   = document.getElementById('log');
+  const log = document.getElementById('log');
   const empty = document.getElementById('empty');
   if (empty) empty.remove();
-
-  const now  = new Date();
-  const time = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
+  const time = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const entry = document.createElement('div');
   entry.className = 'log-entry';
-  entry.innerHTML = `<span>Visita #${count}</span><span class="time">${time}</span>`;
+  entry.innerHTML = `<span>Visita #${count} <span class="label">${timbreLabel}</span></span><span class="time">${time}</span>`;
   log.insertBefore(entry, log.firstChild);
 }
 
 function setConn(ok) {
-  document.getElementById('dot').className     = 'dot ' + (ok ? 'green' : 'red');
+  document.getElementById('dot').className = 'dot ' + (ok ? 'green' : 'red');
   document.getElementById('connText').textContent = ok ? 'Conectado — esperando visitas' : 'Desconectado';
 }
 
-// Ably
 const client  = new Ably.Realtime({ key: ABLY_KEY });
 const channel = client.channels.get(CHANNEL);
 
-client.connection.on('connected', () => setConn(true));
+client.connection.on('connected',    () => setConn(true));
 client.connection.on('disconnected', () => setConn(false));
-client.connection.on('failed', () => setConn(false));
+client.connection.on('failed',       () => setConn(false));
 
 channel.subscribe('llegada', () => {
-  playDoorbell();
+  const t = TIMBRES[currentTimbre];
+  t.play(getCtx());
   flash();
-  addLog();
+  addLog(t.label);
 });
 </script>
 </body>
